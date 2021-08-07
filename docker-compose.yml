@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+    stacklight-setter:
+        build: .
+        restart: always
+        environment:
+            ICINGA_ADDRESS: ""
+            ICINGA_API_USER: ""
+            ICINGA_API_PASSWORD: ""
+            STACKLIGHT_ADDRESS: ""
