@@ -3,12 +3,14 @@ Icinga status controller for the POE Stack Light
 
 This is a python script in a docker container which connects an Icinga network monitoring instance to a [POE stack light][blog-post].
 
-The script is configured by three environment variables which set the location of the icinga instance and the stacklight.
-The example docker-compose file give an example of how it can be configured.
+The script is configured by the environment variables shown which set the location of the icinga instance and the stacklight.
+The example docker-compose file give an template for configuring.
 
 ```
 ICINGA_ADDRESS=localhost
 ICINGA_PORT=5665
+ICINGA_API_USER
+ICINGA_API_PASSWORD
 STACKLIGHT_ADDRESS
 ```
 
