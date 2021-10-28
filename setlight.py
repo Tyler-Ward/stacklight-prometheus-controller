@@ -28,8 +28,8 @@ headers = {
         'Accept': 'application/json',
         'X-HTTP-Method-Override': 'GET'
         }
-data = {
-        "attrs": [ "name", "state", "state_type", "last_hard_state"],
+requestdata = {
+        "attrs": [ "name", "state", "state_type", "last_hard_state", "acknowledgement"],
         "joins": [ "host.name", "host.state"],
 }
 
@@ -38,15 +38,16 @@ while True:
     r = requests.post(request_url,
             headers=headers,
             auth=(icinga_api_user, icinga_api_password),
-            data=json.dumps(data),
+            data=json.dumps(requestdata),
             verify=False)
 
     maxstate=0;
 
     if (r.status_code == 200):
         data = r.json()
+        print(data["results"])
         for service in data["results"]:
-            if service["attrs"]["last_hard_state"]>maxstate:
+            if service["attrs"]["last_hard_state"]>maxstate and service["attrs"]["acknowledgement"] == 0:
                 maxstate = service["attrs"]["state"]
 
         colour="off"

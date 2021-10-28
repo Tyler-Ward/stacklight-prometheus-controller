@@ -1,8 +1,9 @@
 version: "3"
 
 services:
-    stacklight-setter:
+    stacklight-icinga:
         build: .
+        image: stacklight-icinga
         restart: always
         environment:
             ICINGA_ADDRESS: ""
