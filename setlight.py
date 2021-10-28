@@ -45,7 +45,6 @@ while True:
 
     if (r.status_code == 200):
         data = r.json()
-        print(data["results"])
         for service in data["results"]:
             if service["attrs"]["last_hard_state"]>maxstate and service["attrs"]["acknowledgement"] == 0:
                 maxstate = service["attrs"]["state"]
