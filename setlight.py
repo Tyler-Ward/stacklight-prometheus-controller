@@ -5,56 +5,42 @@ import json
 import time
 import os
 
-icinga_address = os.environ.get("ICINGA_ADDRESS","localhost")
-icinga_port = os.environ.get("ICINGA_PORT","5665")
-icinga_api_user = os.environ.get("ICINGA_API_USER")
-icinga_api_password = os.environ.get("ICINGA_API_PASSWORD")
+
+prometheus_address = os.environ.get("PROMETHEUS_ADDRESS","localhost")
+prometheus_port = os.environ.get("PROMETHEUS_PORT","9090")
+prometheus_query = os.environ.get("PROMETHEUS_QUERY")
+threshold_yellow = int(os.environ.get("THRESHOLD_YELLOW",50))
+threshold_red = int(os.environ.get("THRESHOLD_RED",75))
 stacklight_address = os.environ.get("STACKLIGHT_ADDRESS")
 
-if stacklight_address is None:
-    print("STACKLIGHT_ADDRESS environment variable must be set")
+if prometheus_query is None:
+    print("PROMETHEUS_QUERY environment variable must be set")
     exit()
 
-if icinga_api_user is None:
-    print("ICINGA_API_USER environment variable must be set")
-    exit()
-
-if icinga_api_password is None:
-    print("ICINGA_API_PASSWORD environment variable must be set")
-    exit()
-
-request_url = "https://{}:{}/v1/objects/services".format(icinga_address, icinga_port)
+request_url = "http://{}:{}/api/v1/query?query={}".format(
+        prometheus_address, prometheus_port,
+        requests.utils.quote(prometheus_query, safe=""))
 headers = {
         'Accept': 'application/json',
         'X-HTTP-Method-Override': 'GET'
         }
-requestdata = {
-        "attrs": [ "name", "state", "state_type", "last_hard_state", "acknowledgement"],
-        "joins": [ "host.name", "host.state"],
-}
 
 
 while True:
-    r = requests.post(request_url,
+    r = requests.get(request_url,
             headers=headers,
-            auth=(icinga_api_user, icinga_api_password),
-            data=json.dumps(requestdata),
             verify=False)
-
-    maxstate=0;
 
     if (r.status_code == 200):
         data = r.json()
-        for service in data["results"]:
-            if service["attrs"]["last_hard_state"]>maxstate and service["attrs"]["acknowledgement"] == 0:
-                maxstate = service["attrs"]["state"]
+        # print(data);
+        value = int(data["data"]["result"][0]["value"][1])
+        # print(value)
 
         colour="off"
-        if maxstate == 0:
-            colour="off"
-        elif maxstate == 1:
+        if value >= threshold_yellow:
             colour="yellow"
-        else:
+        if value >= threshold_red:
             colour="red"
 
         print("setting to {}".format(colour))
@@ -63,4 +49,4 @@ while True:
             data="mode={}".format(colour),
             verify=False)
 
-        time.sleep(5)
+    time.sleep(5)

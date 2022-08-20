@@ -1,12 +1,13 @@
 version: "3"
 
 services:
-    stacklight-icinga:
+    stacklight-prometheus:
         build: .
-        image: stacklight-icinga
+        image: stacklight-prometheus
         restart: always
         environment:
-            ICINGA_ADDRESS: ""
-            ICINGA_API_USER: ""
-            ICINGA_API_PASSWORD: ""
+            PROMETHEUS_ADDRESS: ""
+            PROMETHEUS_QUERY: ""
+            THRESHOLD_YELLOW: ""
+            THRESHOLD_RED: ""
             STACKLIGHT_ADDRESS: ""
