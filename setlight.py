@@ -28,6 +28,7 @@ headers = {
         }
 
 colour = "off"
+colour_next = "off"
 
 while True:
     r = requests.get(request_url,
